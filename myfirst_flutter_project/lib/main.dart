@@ -1,89 +1,70 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:myfirst_flutter_project/models/Quote.dart';
 
-void main() => runApp(ProjectId());
+void main() => runApp(MaterialApp(home: QuoteList()));
 
-class ProjectId extends StatelessWidget {
+class QuoteList extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Home(),
-    );
+  State<QuoteList> createState() => _QuoteListState();
+}
+
+class _QuoteListState extends State<QuoteList> {
+  List<Quote> quotes = [
+    Quote(1, "1", "lythanhhai"),
+    Quote(2, "2", "huynhphuquy")
+  ];
+  Widget QuoteTemplate(quote) {
+    return QuoteCard(quote: quote);
   }
-}
 
-class NinjaCard extends StatefulWidget
-{
-  
-}
-
-class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[900],
-      appBar: AppBar(
-        title: Text('Project ID'),
-        centerTitle: true,
-        backgroundColor: Colors.grey[300],
-      ),
-      body: Padding(
-        padding: EdgeInsets.fromLTRB(30, 40, 30, 0),
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Center(
-                  child: CircleAvatar(
-                backgroundImage: AssetImage("assets/pokemon.jpg"),
-                radius: 50,
-              )),
-              Divider(
-                height: 30,
-              ),
-              Text("NAME",
-                  style: TextStyle(color: Colors.grey, letterSpacing: 2.0)),
-              SizedBox(
-                height: 10,
-              ),
-              Text("Ly Thanh Hai",
-                  style: TextStyle(
-                      color: Colors.amberAccent[200],
-                      letterSpacing: 2.0,
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold)),
-              SizedBox(
-                height: 30,
-              ),
-              Text("Current level",
-                  style: TextStyle(color: Colors.grey, letterSpacing: 2.0)),
-              SizedBox(
-                height: 10,
-              ),
-              Text("8",
-                  style: TextStyle(
-                      color: Colors.amberAccent[200],
-                      letterSpacing: 2.0,
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold)),
-              SizedBox(
-                height: 30,
-              ),
-              Row(
-                children: <Widget>[
-                  Icon(Icons.mail, color: Colors.grey[400]),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Text("lythanhhait@gmail.com",
-                      style: TextStyle(
-                        color: Colors.grey[400],
-                        letterSpacing: 1,
-                        fontSize: 18,
-                      )),
-                ],
-              )
-            ]),
-      ),
+        appBar: AppBar(
+          title: Text("Quote List"),
+          centerTitle: true,
+          backgroundColor: Colors.redAccent,
+        ),
+        body: Column(
+            children: quotes.map((quote) => QuoteTemplate(quote)).toList()));
+  }
+}
+
+class QuoteCard extends StatelessWidget {
+  QuoteCard({super.key, required this.quote});
+  final Quote quote;
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: EdgeInsets.fromLTRB(16, 16, 16, 0),
+      child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8.0, 8, 8, 0),
+              child: Text(quote.text,
+                  style: TextStyle(fontSize: 18, color: Colors.grey[600])),
+            ),
+            SizedBox(
+              height: 6,
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8.0, 0, 8, 8),
+              child: Text(quote.author,
+                  style: TextStyle(fontSize: 14, color: Colors.grey[800])),
+            ),
+            SizedBox(
+              height: 6,
+            ),
+            TextButton.icon(
+              onPressed: () {},
+              icon: FaIcon(FontAwesomeIcons.heart, color: Colors.redAccent),
+              label: Text("Add to favourite!",
+                  style: TextStyle(color: Colors.redAccent)),
+            )
+          ]),
     );
   }
 }
