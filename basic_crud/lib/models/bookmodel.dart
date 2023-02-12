@@ -1,26 +1,39 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class bookModel {
-  late int _id;
+  late String _id;
+  late DocumentSnapshot _documentSnapshot;
   late String _name;
   late String _description;
 
-  // bookModel(String name, String description) {
-  //   this._name = name;
-  //   this._description = description;
-  // }
+  bookModel(String name, String description) {
+    _name = name;
+    _description = description;
+  }
+
+  bookModel1(String name, String description) {
+    _name = name;
+    _description = description;
+  }
 
   getId() => _id;
   getName() => _name;
   getDescription() => _description;
+  getDocumentSnapshot() => _documentSnapshot;
 
   setName(String name) {
-    this._name = name;
+    _name = name;
   }
 
   setDescription(String description) {
-    this._description = description;
+    _description = description;
   }
 
-  setId(int Id) {
+  setId(String Id) {
     this._id = Id;
+  }
+
+  setDocumentSnapshot(DocumentSnapshot documentSnapshot) {
+    _documentSnapshot = documentSnapshot;
   }
 }

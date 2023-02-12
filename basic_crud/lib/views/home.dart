@@ -16,43 +16,45 @@ class Home extends StatelessWidget {
       body: Column(children: <Widget>[
         Center(
             child: Container(
-          child: Text("Book Management",
+          margin: const EdgeInsets.fromLTRB(0, 30, 0, 20),
+          child: const Text("Book Management",
               style: TextStyle(
                   color: Colors.cyan,
                   fontSize: 20,
                   fontWeight: FontWeight.w600)),
-          margin: EdgeInsets.fromLTRB(0, 30, 0, 20),
         )),
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Text(
-              "List available book",
-              style: TextStyle(
-                fontSize: 16,
+            Container(
+              margin: EdgeInsets.fromLTRB(30, 0, 0, 0),
+              child: const Text(
+                "List available book",
+                style: TextStyle(
+                  fontSize: 16,
+                ),
               ),
             ),
-            TextButton.icon(
-              onPressed: () {
-                Navigator.pushNamed(context, "/add");
-              },
-              icon: Icon(
-                Icons.add,
+            Container(
+              margin: EdgeInsets.fromLTRB(0, 0, 30, 0),
+              child: TextButton.icon(
+                onPressed: () {
+                  Navigator.pushNamed(context, "/add");
+                },
+                icon: const Icon(
+                  Icons.add,
+                ),
+                label: Text("Add book"),
               ),
-              label: Text("Add book"),
             )
           ],
         ),
-        SizedBox(
+        const SizedBox(
           height: 30,
         ),
-        // Column(
-        //   children: listBook.map((e) => cardbook()).toList(),
-        // ),
         Container(
           child: ListBook(),
         )
-        // ListBook()
       ]),
     );
   }

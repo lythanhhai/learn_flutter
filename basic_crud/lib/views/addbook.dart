@@ -8,9 +8,6 @@ import 'package:provider/provider.dart';
 
 class addBook extends StatelessWidget {
   addBook({super.key});
-  FirebaseFirestore firestore = FirebaseFirestore.instance;
-  final Stream<QuerySnapshot> _booksStream =
-      FirebaseFirestore.instance.collection('books').snapshots();
   final nameBookController = TextEditingController();
   final descriptionBookController = TextEditingController();
 
@@ -21,86 +18,77 @@ class addBook extends StatelessWidget {
     descriptionBookController.dispose();
   }
 
-  Future<void> AddBookToFireStore(String name, String des) {
-    CollectionReference books = firestore.collection('books');
-    // FirebaseFirestore.instance.collection('books').snapshots().listen((snapshot) {
-    //   books
-    //       .add({'nameBook': name, "desBook": des})
-    //       .then((value) => print("Add successfully!!!"))
-    //       .catchError((err) => print(err));
-    //   notifyListeners();
-    // });
-    // bookcontroller.addBook({
-    //   {'nameBook': name, "desBook": des}
-    // });
-    return books
-        .add({'nameBook': name, "desBook": des})
-        .then((value) => print("Add successfully!!!"))
-        .catchError((err) => print(err));
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: <Widget>[
-          SizedBox(
-            height: 30,
-          ),
-          Center(
-              child: Text(
-            "Add new book",
-            style: TextStyle(fontSize: 19, color: Colors.blueAccent),
-          )),
-          SizedBox(
-            height: 30,
-          ),
-          Container(
-            margin: EdgeInsets.fromLTRB(30, 0, 30, 0),
-            child: TextField(
-              obscureText: false,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Enter new name book...',
-              ),
-              controller: nameBookController,
+    return ChangeNotifierProvider.value(
+      value: bookcontroller(),
+      child: Scaffold(
+        body: Column(
+          children: <Widget>[
+            const SizedBox(
+              height: 30,
             ),
-          ),
-          SizedBox(
-            height: 20,
-          ),
-          Container(
-            margin: EdgeInsets.fromLTRB(30, 0, 30, 0),
-            child: TextField(
-              obscureText: false,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Enter some description for new book...',
-              ),
-              controller: descriptionBookController,
+            const Center(
+                child: Text(
+              "Add new book",
+              style: TextStyle(fontSize: 19, color: Colors.blueAccent),
+            )),
+            const SizedBox(
+              height: 30,
             ),
-          ),
-          SizedBox(
-            height: 20,
-          ),
-          TextButton(
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      // Retrieve the text the that user has entered by using the
-                      // TextEditingController.
-                      content: Text(
-                          '${nameBookController.text} - ${descriptionBookController.text}'),
-                    );
+            Container(
+              margin: const EdgeInsets.fromLTRB(30, 0, 30, 0),
+              child: TextField(
+                obscureText: false,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Enter new name book...',
+                ),
+                controller: nameBookController,
+              ),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            Container(
+              margin: const EdgeInsets.fromLTRB(30, 0, 30, 0),
+              child: TextField(
+                obscureText: false,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Enter some description for new book...',
+                ),
+                controller: descriptionBookController,
+              ),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            Consumer<bookcontroller>(
+              builder: (_, bookController, __) => TextButton(
+                  onPressed: () {
+                    // showDialog(
+                    //   context: context,
+                    //   builder: (context) {
+                    //     return AlertDialog(
+                    //       // Retrieve the text the that user has entered by using the
+                    //       // TextEditingController.
+                    //       content: Text(
+                    //           '${nameBookController.text} - ${descriptionBookController.text}'),
+                    //     );
+                    //   },
+                    // );
+                    bookModel book = bookModel(nameBookController.text,
+                        descriptionBookController.text);
+                    bookController.AddBookToFireStore(book);
+                    // bookController.bbb();
+                    // print(bookController.getListBooks());
+                    Navigator.pushNamed(context, "/home");
                   },
-                );
-                AddBookToFireStore(
-                    nameBookController.text, descriptionBookController.text);
-              },
-              child: Text("Add")),
-        ],
+                  child: const Text("Add")),
+            ),
+          ],
+        ),
       ),
     );
   }

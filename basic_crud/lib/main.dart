@@ -13,7 +13,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   final Future<FirebaseApp> _initialization = Firebase.initializeApp(
-      options: FirebaseOptions(
+      options: const FirebaseOptions(
     apiKey: 'AIzaSyBXb4XKywXegHR3g428ManmwH-29coWXuk',
     appId: '1:696799057792:web:c7c39ea6f7168b11a59365',
     messagingSenderId: '696799057792',
