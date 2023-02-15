@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -35,6 +36,15 @@ class bookcontroller extends ChangeNotifier {
   // }
 
   getListBooks() {
+    // try {
+    //   final result =
+    //       await FirebaseFunctions.instance.httpsCallable('addMessage').call();
+    //   String _response = result.data as String;
+    //   print(_response);
+    // } on FirebaseFunctionsException catch (error) {
+    //   print(error.code);
+    //   print(error.details);
+    //   print(error.message);
     return books;
   }
 
@@ -109,6 +119,15 @@ class bookcontroller extends ChangeNotifier {
         'desBook': newBook.getDescription()
       }).toString(),
     );
+  }
+
+  EditBook1(DocumentSnapshot documentSnapshot, bookModel newBook) {
+    final callable =
+        FirebaseFunctions.instance.httpsCallable("editBook1").call({
+      'bookId': documentSnapshot.id,
+      'nameBook': newBook.getName(),
+      'desBook': newBook.getDescription()
+    });
   }
   // {
   //   await _booksStream.doc(documentSnapshot!.id).update(
