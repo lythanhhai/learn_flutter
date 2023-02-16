@@ -8,12 +8,14 @@ class signUp extends StatelessWidget {
   signUp({super.key});
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
+  final roleController = TextEditingController();
 
   @override
   void dispose() {
     // Clean up the controller when the widget is disposed.
     usernameController.dispose();
     passwordController.dispose();
+    roleController.dispose();
   }
 
   @override
@@ -51,12 +53,26 @@ class signUp extends StatelessWidget {
             Container(
               margin: const EdgeInsets.fromLTRB(30, 0, 30, 0),
               child: TextField(
-                obscureText: false,
+                obscureText: true,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'Enter password...',
                 ),
                 controller: passwordController,
+              ),
+            ),
+            const SizedBox(
+              height: 20,
+            ),
+            Container(
+              margin: const EdgeInsets.fromLTRB(30, 0, 30, 0),
+              child: TextField(
+                obscureText: false,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Enter your roles...',
+                ),
+                controller: roleController,
               ),
             ),
             const SizedBox(
@@ -76,8 +92,13 @@ class signUp extends StatelessWidget {
                     //     );
                     //   },
                     // );
+
                     authController.signup(
-                        usernameController.text, passwordController.text);
+                        usernameController.text,
+                        passwordController.text,
+                        roleController.text);
+                    // print(res);
+
                     Navigator.pushNamed(context, "/home");
                   },
                   child: const Text("Sign Up")),

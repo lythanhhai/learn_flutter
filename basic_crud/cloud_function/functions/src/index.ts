@@ -4,6 +4,8 @@ import * as sendEmail from "@sendgrid/mail";
 
 const cors = require("cors")({ origin: true });
 
+// const firebaseClient = require("firebase");
+
 import * as admin from "firebase-admin";
 admin.initializeApp();
 
@@ -47,19 +49,20 @@ exports.sayHello = functions.https.onCall((data, context) => {
   return "hellu";
 });
 
-exports.getBook = functions.https.onCall((data, text) => {
-  // let listBook;
-  // admin
-  //   .firestore()
-  //   .collection("books")
-  //   .get()
-  //   .then((res) => {g
-
-  //     console.log(res.docs);
-  //     listBook = res;
-  //   })
-  //   .catch((err) => console.log("err:" + err));
-  return "Heelo";
+exports.getBook = functions.https.onCall(async (data, text) => {
+  let listBook;
+  await admin
+    .firestore()
+    .collection("users")
+    .doc(data.id)
+    .collection("books")
+    .get()
+    .then((res) => {
+      console.log(res.docs[0].data());
+      listBook = res.docs;
+    })
+    .catch((err) => console.log("err:" + err));
+  return listBook;
 });
 
 exports.addBook = functions.https.onCall(async (data, text) => {
@@ -73,6 +76,8 @@ exports.addBook1 = functions.https.onRequest(async (req, res) => {
   cors(req, res, async () => {
     await admin
       .firestore()
+      .collection("users")
+      .doc(req.body.uid)
       .collection("books")
       .add({ nameBook: req.body.nameBook, desBook: req.body.desBook });
   });
@@ -83,6 +88,8 @@ exports.editBook = functions.https.onRequest((req, res) => {
     // json.decode(res.body);
     await admin
       .firestore()
+      .collection("users")
+      .doc(req.body.uid)
       .collection("books")
       .doc(req.body.bookId)
       .update({ nameBook: req.body.nameBook, desBook: req.body.desBook });
@@ -99,31 +106,26 @@ exports.editBook1 = functions.https.onCall(async (data, context) => {
 
 exports.deleteBook = functions.https.onRequest((req, res) => {
   cors(req, res, async () => {
-    await admin.firestore().collection("books").doc(req.body.bookId).delete();
+    await admin
+      .firestore()
+      .collection("users")
+      .doc(req.body.uid)
+      .collection("books")
+      .doc(req.body.bookId)
+      .delete();
   });
 });
 
 //
 
-exports.login = functions.https.onRequest((req, res) => {
-  // cors(req, res, () => {
-  //   admin
-  //     .auth()
-  //     .getUser({ email: req.body.username, password: req.body.password })
-  //     .then((userCredential) => {
-  //       // Signed in
-  //       var user = userCredential.email;
-  //       // ...
-  //       res.status(200).send({ user: user });
-  //     })
-  //     .catch((error) => {
-  //       res.status(500).send({
-  //         errCode: error.code,
-  //         errMessage: error.message,
-  //       });
-  //     });
-  // });
-});
+// exports.login = functions.https.onRequest((req, res) => {
+//   cors(req, res, () => {
+//     firebaseClient.auth().signInWithEmailAndPassword({
+//       email: req.body.username,
+//       password: req.body.password,
+//     });
+//   });
+// });
 
 exports.signup = functions.https.onRequest((req, res) => {
   cors(req, res, () => {
@@ -156,10 +158,12 @@ exports.saveUserAfterLogin = functions.https.onRequest((req, res) => {
         email: req.body.email,
         roles: req.body.roles,
       });
-      res.status(200).send("Add user succeffully!!!");
+      res.status(200).send("Add user successfully!!!");
     }
   });
 });
+
+// exports.getCurrentUser
 
 // authentication trigger
 exports.saveUser = functions.auth.user().onCreate((user) => {

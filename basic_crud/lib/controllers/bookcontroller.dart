@@ -3,53 +3,66 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import '../models/bookmodel.dart';
 
 class bookcontroller extends ChangeNotifier {
-  final CollectionReference _booksStream =
-      FirebaseFirestore.instance.collection('books');
   late List<bookModel> books = [];
 
   bookcontroller() {
-    FirebaseFirestore.instance
-        .collection('books')
-        .snapshots()
-        .listen((snapshot) async {
-      List<bookModel> list = [];
-      for (var doc in snapshot.docs) {
-        bookModel book =
-            bookModel(doc.data()["nameBook"], doc.data()["desBook"]);
-        book.setDocumentSnapshot(doc);
-        list.add(book);
-      }
-      books = list;
-      notifyListeners();
-    });
+    // FirebaseFirestore.instance
+    //     .collection('books')
+    //     .snapshots()
+    //     .listen((snapshot) async {
+    //   List<bookModel> list = [];
+    //   for (var doc in snapshot.docs) {
+    //     bookModel book =
+    //         bookModel(doc.data()["nameBook"], doc.data()["desBook"]);
+    //     book.setDocumentSnapshot(doc);
+    //     list.add(book);
+    //   }
+    //   books = list;
+    //   notifyListeners();
+    // });
   }
 
-  // void bbb() {
-  //   books = [bookModel("1", "2")];
-  //   notifyListeners();
-  // }
-
-  getListBooks() {
+  List<bookModel> getListBooks() {
     // try {
-    //   final result =
-    //       await FirebaseFunctions.instance.httpsCallable('addMessage').call();
+    //   final FirebaseAuth auth = FirebaseAuth.instance;
+    //   final User? user = auth.currentUser;
+    //   final uid = user?.uid;
+    //   String currentIdDoc = "";
+    //   await FirebaseFirestore.instance.collection("users").get().then((array) {
+    //     for (int i = 0; i < array.docs.length; i++) {
+    //       if (uid == array.docs[i].data()["id"]) {
+    //         currentIdDoc = array.docs[i].id;
+    //       }
+    //       // print(array.docs[i].data());
+    //       // print(array.docs[i].id);
+    //     }
+    //   });
+    //   final result = await FirebaseFunctions.instance
+    //       .httpsCallable('getBook')
+    //       .call({"id": currentIdDoc});
     //   String _response = result.data as String;
     //   print(_response);
     // } on FirebaseFunctionsException catch (error) {
     //   print(error.code);
     //   print(error.details);
     //   print(error.message);
+    // }
     return books;
   }
 
+  getLengthListBooks() {
+    return books.length;
+  }
+
   // add book to firestore
-  Future<http.Response> AddBookToFireStore(bookModel book) {
+  void AddBookToFireStore(bookModel book) async {
     // FirebaseFirestore firestore = FirebaseFirestore.instance;
     // CollectionReference books = firestore.collection('books');
 
@@ -66,19 +79,47 @@ class bookcontroller extends ChangeNotifier {
     //     .catchError((err) => {print("err: " + err.toString())});
 
     // C2: onRequest
-    return http.post(
-      Uri.parse('http://127.0.0.1:5001/crudbookflutter/us-central1/addBook1'),
-      headers: <String, String>{
-        "Access-Control-Allow-Origin": "*",
-        'Content-Type': 'application/json',
-        'Accept': '*/*',
-        'X-Requested-With': 'XMLHttpRequest',
-      },
-      body: jsonEncode(<String, String>{
-        'nameBook': book.getName(),
-        'desBook': book.getDescription()
-      }),
-    );
+    final FirebaseAuth auth = FirebaseAuth.instance;
+    final User? user = auth.currentUser;
+    final uid = user?.uid;
+    String currentIdDoc = "";
+    FirebaseFirestore.instance.collection("users").get().then((array) async {
+      for (int i = 0; i < array.docs.length; i++) {
+        if (uid == array.docs[i].data()["id"]) {
+          currentIdDoc = array.docs[i].id;
+        }
+        // print(array.docs[i].data());
+        // print(array.docs[i].id);
+      }
+      final result = await FirebaseFunctions.instance
+          .httpsCallable('getBook')
+          .call({"id": currentIdDoc});
+      String _response = result.data as String;
+      print(_response);
+      if (currentIdDoc == "") {
+      } else {
+        http.post(
+          Uri.parse(
+              'http://127.0.0.1:5002/crudbookflutter/us-central1/addBook1'),
+          headers: <String, String>{
+            "Access-Control-Allow-Origin": "*",
+            'Content-Type': 'application/json',
+            'Accept': '*/*',
+            'X-Requested-With': 'XMLHttpRequest',
+          },
+          body: jsonEncode(<String, String>{
+            "uid": currentIdDoc,
+            'nameBook': book.getName(),
+            'desBook': book.getDescription()
+          }),
+        );
+      }
+    });
+    // print(currentIdDoc);
+    // Similarly we can get email as well
+    //final uemail = user.email;
+    // print(uid);
+    //print(uemail);
   }
 
   // delete book in firestore
@@ -88,7 +129,7 @@ class bookcontroller extends ChangeNotifier {
     // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
     //     content: Text('You have successfully deleted a product')));
     return http.delete(
-      Uri.parse('http://127.0.0.1:5001/crudbookflutter/us-central1/deleteBook'),
+      Uri.parse('http://127.0.0.1:5002/crudbookflutter/us-central1/deleteBook'),
       headers: <String, String>{
         "Access-Control-Allow-Origin": "*",
         'Content-Type': 'application/json',
@@ -106,7 +147,7 @@ class bookcontroller extends ChangeNotifier {
   Future<http.Response> EditBook(
       DocumentSnapshot documentSnapshot, bookModel newBook) async {
     return http.post(
-      Uri.parse('http://127.0.0.1:5001/crudbookflutter/us-central1/editBook'),
+      Uri.parse('http://127.0.0.1:5002/crudbookflutter/us-central1/editBook'),
       headers: <String, String>{
         "Access-Control-Allow-Origin": "*",
         'Content-Type': 'application/json',

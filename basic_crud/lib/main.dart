@@ -6,6 +6,7 @@ import 'package:basic_crud/views/login.dart';
 import 'package:basic_crud/views/signup.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'firebase_options.dart';
@@ -27,10 +28,19 @@ void main() async {
     storageBucket: 'crudbookflutter.appspot.com',
     measurementId: 'G-0348SW7D2S',
   ));
+
   // FirebaseFirestore.instance.settings =
   //     const Settings(persistenceEnabled: false, sslEnabled: false);
-  // FirebaseFirestore.instance.useFirestoreEmulator("localhost", 8081);
-  // FirebaseFunctions.instance.useFunctionsEmulator("localhost", 5001);
+
+  try {
+    FirebaseFirestore.instance.useFirestoreEmulator("127.0.0.1", 8070);
+    FirebaseFunctions.instance.useFunctionsEmulator("127.0.0.1", 5002);
+    await FirebaseAuth.instance.useAuthEmulator("127.0.0.1", 8098);
+  } catch (e) {
+    // ignore: avoid_print
+    print(e);
+  }
+
   runApp(MaterialApp(
     home: FutureBuilder(
       future: _initialization,

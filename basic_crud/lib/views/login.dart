@@ -1,6 +1,4 @@
 import 'package:basic_crud/controllers/authController.dart';
-import 'package:basic_crud/controllers/bookcontroller.dart';
-import 'package:basic_crud/models/bookmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -9,7 +7,6 @@ class Login extends StatelessWidget {
   final usernameController = TextEditingController();
   final passwordController = TextEditingController();
 
-  @override
   void dispose() {
     // Clean up the controller when the widget is disposed.
     usernameController.dispose();
@@ -28,7 +25,7 @@ class Login extends StatelessWidget {
             ),
             const Center(
                 child: Text(
-              "Sign Up",
+              "Login",
               style: TextStyle(fontSize: 19, color: Colors.blueAccent),
             )),
             const SizedBox(
@@ -51,7 +48,7 @@ class Login extends StatelessWidget {
             Container(
               margin: const EdgeInsets.fromLTRB(30, 0, 30, 0),
               child: TextField(
-                obscureText: false,
+                obscureText: true,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'Enter password...',
@@ -65,11 +62,11 @@ class Login extends StatelessWidget {
             Consumer<AuthController>(
               builder: (_, authController, __) => TextButton(
                   onPressed: () {
-                    
-
+                    authController.login(
+                        usernameController.text, passwordController.text);
                     Navigator.pushNamed(context, "/home");
                   },
-                  child: const Text("Sign Up")),
+                  child: const Text("Login")),
             ),
           ],
         ),
